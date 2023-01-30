@@ -13,6 +13,7 @@ import com.caito.carmicroservice.service.contract.CarService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -32,6 +33,9 @@ public class CarServiceImpl implements CarService {
     private NewCarMapper newCarMapper;
 
     private static  final Logger logger = LoggerFactory.getLogger(CarServiceImpl.class);
+
+    @Value("${base.user.url}")
+    private String baseUserUrl;
 
     @Override
     public List<CarDTO> getAll() {
@@ -53,9 +57,9 @@ public class CarServiceImpl implements CarService {
     @Override
     public CarDTO createCar(NewCarDTO car) {
         logger.info("inicio servicio guardado autos");
-        logger.info("llamado a servicio de usarios " + "http://localhost:8001/users/" + car.getUserId());
+        logger.info("llamado a servicio de usarios " + baseUserUrl + car.getUserId());
         try {
-            User user = restTemplate.getForObject("http://localhost:8001/users/" + car.getUserId(),
+            User user = restTemplate.getForObject(baseUserUrl + car.getUserId(),
                     User.class);
         }catch (HttpClientErrorException e){
             logger.error("el usuario no existe");

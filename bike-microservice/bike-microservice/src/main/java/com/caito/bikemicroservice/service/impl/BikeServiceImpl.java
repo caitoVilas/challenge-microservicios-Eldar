@@ -12,6 +12,7 @@ import com.caito.bikemicroservice.service.contract.BikeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -31,6 +32,9 @@ public class BikeServiceImpl implements BikeService {
     private NewBikeDTOMapper newBikeDTOMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(BikeServiceImpl.class);
+
+    @Value("${base.user.url}")
+    private String baseUserUrl;
 
 
     @Override
@@ -54,8 +58,8 @@ public class BikeServiceImpl implements BikeService {
     public BikeDTO createBike(NewBikeDTO bike) {
         logger.info("inicio servicio creacion motos");
         try {
-            logger.info("llamando a servicio de usuarios " + "http://localhost:8001/users/"+ bike.getUserId());
-            User user = restTemplate.getForObject("http://localhost:8001/users/"+ bike.getUserId(),
+            logger.info("llamando a servicio de usuarios " + baseUserUrl+ bike.getUserId());
+            User user = restTemplate.getForObject(baseUserUrl+ bike.getUserId(),
                     User.class);
         }catch (HttpClientErrorException e){
             logger.error("el usuario no existe");

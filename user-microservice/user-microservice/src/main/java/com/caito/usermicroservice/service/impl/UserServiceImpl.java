@@ -15,6 +15,7 @@ import com.caito.usermicroservice.service.contract.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -36,6 +37,11 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
+    @Value("${base.cars.url}")
+    private String baseUrlCars;
+    @Value("${base.bikes.url}")
+    private String baseUrlBikes;
 
 
     @Override
@@ -60,7 +66,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<CarDTO> getCars(Long id) {
         logger.info("inicio servicio de busqueda de autos por usuario");
-        List<CarDTO> cars = restTemplate.getForObject("http://localhost:8002/api/v1/cars/user/" + id,
+        logger.info("llamado servicio externo: " + baseUrlCars + "/user/" + id);
+        List<CarDTO> cars = restTemplate.getForObject(baseUrlCars + "/user/" + id,
                 List.class);
         return cars;
     }
@@ -68,17 +75,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<BikeDTO> getBikes(Long id) {
         logger.info("inicio sevicio de motos por usuario");
-        List<BikeDTO> bikes = restTemplate.getForObject("http://localhost:8003/api/v1/bikes/user/" + id,
+        logger.info("llamando servicio externo: " + baseUrlBikes +"/user/" + id);
+        List<BikeDTO> bikes = restTemplate.getForObject(baseUrlBikes + "/user/" + id,
                 List.class);
         return bikes;
     }
 
     @Override
     public CarDTO createCar(NewCarDTO car) {
-        logger.info("llamado a  sercio de creacion de autos http://localhost:8002/api/v1/cars/");
+        logger.info("llamado a  sercio de creacion de autos " + baseUrlCars);
         CarDTO carNew;
         try {
-            carNew = restTemplate.postForObject("http://localhost:8002/api/v1/cars/", car, CarDTO.class);
+            carNew = restTemplate.postForObject(baseUrlCars, car, CarDTO.class);
         }catch (HttpClientErrorException e){
             logger.error("el usuario no existe");
             throw new NotFoundException("el usuario no existe");
@@ -88,10 +96,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public BikeDTO createBike(NewBikeDTO bike) {
-        logger.info("llamado a servicio creacion de moto http://localhost:8003/api/v1/bikes/");
+        logger.info("llamado a servicio creacion de moto " + baseUrlBikes);
         BikeDTO bikeNew;
         try {
-            bikeNew = restTemplate.postForObject("http://localhost:8003/api/v1/bikes/", bike, BikeDTO.class);
+            bikeNew = restTemplate.postForObject(baseUrlBikes, bike, BikeDTO.class);
         }catch (HttpClientErrorException e){
             logger.error("el usuario no existe");
             throw new NotFoundException("el usuario no existe");
